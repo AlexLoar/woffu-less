@@ -12,6 +12,7 @@ import argparse
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.chrome.options import Options
 
 
 parser = argparse.ArgumentParser()
@@ -30,7 +31,9 @@ PASSWORD = ''  # Get password from env | os.environ('WOFFU_PASS')
 random_mins = random.randint(3, 6) * 60
 time.sleep(random_mins)
 
-driver = webdriver.Chrome('/usr/lib/chromium-browser/chromedriver')
+chrome_options = Options()
+chrome_options.add_argument("--headless")
+driver = webdriver.Chrome('/usr/lib/chromium-browser/chromedriver', chrome_options=chrome_options)
 wait = WebDriverWait(driver, 10)
 
 driver.get(URL)

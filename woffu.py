@@ -1,5 +1,3 @@
-#!/home/alex/.virtualenvs/woffu/bin/python3
-
 # -------------------------------------------------------------------
 # Set a cronjob 5 minutes before you clock-in/out
 # running this script and forget about using Woffu :)
@@ -9,10 +7,16 @@ import os
 import time
 import random
 import argparse
+import logging
+from logging.handlers import TimedRotatingFileHandler
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.options import Options
+
+
+logging_handler = TimedRotatingFileHandler(filename='woffu.log', when='D', interval=30)
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S', level=logging.INFO, handlers=[logging_handler])
 
 
 parser = argparse.ArgumentParser()
@@ -22,9 +26,9 @@ args = parser.parse_args()
 action = args.action
 
 # --------------------------------------------
-URL = 'https://COMPANY-NAME.woffu.com/#/login'
-EMAIL = ''
-PASSWORD = ''  # Get password from env | os.environ('WOFFU_PASS')
+URL = f'https://{os.environ('WOFFU_COMPANY')}.woffu.com/#/login'
+EMAIL = os.environ('WOFFU_EMAIL')
+PASSWORD = os.environ('WOFFU_PASS')
 # --------------------------------------------
 
 # To avoid clock-in/out always at the same exact time
@@ -52,8 +56,10 @@ wait.until(lambda driver: driver.find_element_by_class_name('progress-bar'))
 
 if action == 'entrada':
 	driver.find_element_by_id("in").click()
+	logging.info('Entrada')
 
 elif action == 'salida':
 	driver.find_element_by_id("out").click()
+	logging.info('Salida')
 
 driver.quit()
